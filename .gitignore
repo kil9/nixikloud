@@ -2,3 +2,4 @@ venv/
 .env
 *.py[cod]
 env.sh
+tags
