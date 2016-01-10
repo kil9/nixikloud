@@ -16,6 +16,7 @@ def main():
 
 @app.route('/run/<action>/<int:repeat>')
 @app.route('/run/<action>/<args>')
+@app.route('/run/<action>')
 def run(action='test', args='', repeat=1):
     log.info('action: {}, args: {}, repeat: {}'.format(action, args, repeat))
 
