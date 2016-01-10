@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from logentries import LogentriesHandler
 
-DEBUG = True
+DEBUG = False
 
 engine = create_engine('postgres://urrpegktasoewc:bzCIGXqXTgHJOFek8uwBTPrqlS@ec2-54-197-241-239.compute-1.amazonaws.com:5432/dbpll7ajleqep4')
 Session = sessionmaker(bind=engine)
