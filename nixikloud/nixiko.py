@@ -327,15 +327,15 @@ class Nixiko:
             log.debug(u'팔로어: {}, 호감도+1'.format(mention_user.screen_name))
         except NoResultFound:
             mention_user = Follower(minfo['name'], minfo['screen_name'])
-            log.debug('팔로어 adding: {}({})'.format(minfo['name'], minfo['screen_name']))
+            log.debug(u'팔로어 adding: {}({})'.format(minfo['name'], minfo['screen_name']))
         except MultipleResultsFound:
-            log.error('중복유저: %s(%s)'% (minfo['name'], minfo['screen_name']))
+            log.error(u'중복유저: {}({})'.format(minfo['name'], minfo['screen_name']))
         mention_user.modified_at = datetime.datetime.now()
         try:
             session.add(mention_user)
             session.commit()
         except:
-            log.exception('팔로어 학습 실패: {}'.format(repr(mention_user)))
+            log.exception(u'팔로어 학습 실패: {}'.format(repr(mention_user)))
             raise
 
     def process_learn(self, category, word, name):
@@ -363,7 +363,7 @@ class Nixiko:
             minfo['screen_name'] = mention.author.screen_name
             minfo['name'] = mention.author.name
             minfo['text'] = mention.text
-            minfo['id'] = mention.id
+            minfo['id'] = mention.id_str
         return minfo
 
     def process_birthday(self, minfo, keyword):
