@@ -501,7 +501,7 @@ class Nixiko:
             if image_filename:
                 log.info(u' [!] with a file: {}'.format(image_filename))
             return
-        self.api.update_status(status=script, in_reply_to_status_id=reply_id)
+        self.api.update_status(status=script, in_reply_to_status_id=in_reply_to)
         return
 
     def remove_screen_name(self, mention):
