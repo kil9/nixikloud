@@ -15,8 +15,6 @@ def on_message(ch, method, properties, body):
     message = json.loads(body.decode('utf-8'))
     log.info(" [ ] Received request: %r" % message)
 
-    #nixiko.process_active_mention()
-
     action = message['action']
     args = message['args']
 
