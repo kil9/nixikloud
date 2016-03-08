@@ -42,7 +42,7 @@ class NixUtil:
     def get_twitter_auth(self):
         auth = tweepy.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
         auth.set_access_token(TWITTER_ACCESS_KEY, TWITTER_ACCESS_SECRET)
-        api = tweepy.API(auth)
+        api = tweepy.API(auth, retry_count=3, retry_delay=5, wait_on_rate_limit=True)
         return api
 
     @classmethod
@@ -62,7 +62,8 @@ class Nixiko:
         ]
         self.debug = debug
 
-        log.debug(' [v] initializing Nixiko finished')
+        log.info(' [v] initializing Nixiko finished')
+        log.info(' [v] last_mention_id: {}'.format(self.config['last_mention_id']))
 
     def tweet(self):
         periodic = NixUtil.get_random_from_subtable(session.query(PeriodicScript).filter_by(is_blind=0))
@@ -176,6 +177,7 @@ class Nixiko:
                     script.replace_numbered_literals([minfo['name'], new_word, new_category]);
                     script.translate()
                     scripts += [script.mention(minfo['screen_name'])]
+                    self.do_tweet(script, minfo['id'])
                     self.process_learn(new_category, new_word, minfo['screen_name'])
                 continue
 
@@ -252,6 +254,8 @@ class Nixiko:
                     log.debug(u'{} keyword found: {}'.format(len(keywords_found), keyword))
                 script = random.choice(script_candidate)
                 script.translate()
+                script.mention(minfo['screen_name'])
+                self.do_tweet(script, minfo['id'])
                 scripts += [script.mention(minfo['screen_name'])]
                 continue
 
@@ -263,7 +267,7 @@ class Nixiko:
             script.replace(u'%{상대}', minfo['name'])
             script.translate()
             script.mention(minfo['screen_name'])
-            self.do_tweet(script)
+            self.do_tweet(script, minfo['id'])
             scripts += [script]
 
         if not input_mentions: # only if processed w/ timeline
@@ -271,7 +275,8 @@ class Nixiko:
                 try:
                     log.debug(u'now update received mention id: {}'.format(str(received_mentions[-1].id)))
                     self.config['last_mention_id'] = str(received_mentions[-1].id)
-                    if not DEBUG: NixConf.update_config(self.config)
+                    #if not DEBUG:
+                    NixConf.update_config(self.config)
                 except:
                     log.exception('id fetching failed')
 
@@ -490,7 +495,7 @@ class Nixiko:
 
     def do_tweet(self, script, in_reply_to=None, image_filename=None):
         assert(isinstance(script, Script))
-        log.debug(u' [?] Tweet: {}'.format(script))
+        log.info(u' [?] Tweet: {} to {}'.format(script, in_reply_to))
 
         if not script.translated: script.translate()
 
